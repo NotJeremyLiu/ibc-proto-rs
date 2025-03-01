@@ -60,18 +60,6 @@ pub mod ibc {
                 #[cfg(feature = "serde")]
                 include_proto!("ibc.applications.transfer.v1.serde.rs");
             }
-            pub mod v2 {
-                include_proto!("ibc.applications.transfer.v2.rs");
-                #[cfg(feature = "serde")]
-                include_proto!("ibc.applications.transfer.v2.serde.rs");
-            }
-        }
-        pub mod fee {
-            pub mod v1 {
-                include_proto!("ibc.applications.fee.v1.rs");
-                #[cfg(feature = "serde")]
-                include_proto!("ibc.applications.fee.v1.serde.rs");
-            }
         }
         pub mod interchain_accounts {
             pub mod v1 {
@@ -109,6 +97,11 @@ pub mod ibc {
                 #[cfg(feature = "serde")]
                 include_proto!("ibc.core.channel.v1.serde.rs");
             }
+            pub mod v2 {
+                include_proto!("ibc.core.channel.v2.rs");
+                #[cfg(feature = "serde")]
+                include_proto!("ibc.core.channel.v2.serde.rs");
+            }
         }
         pub mod client {
             pub mod v1 {
@@ -116,12 +109,22 @@ pub mod ibc {
                 #[cfg(feature = "serde")]
                 include_proto!("ibc.core.client.v1.serde.rs");
             }
+            pub mod v2 {
+                include_proto!("ibc.core.client.v2.rs");
+                #[cfg(feature = "serde")]
+                include_proto!("ibc.core.client.v2.serde.rs");
+            }
         }
         pub mod commitment {
             pub mod v1 {
                 include_proto!("ibc.core.commitment.v1.rs");
                 #[cfg(feature = "serde")]
                 include_proto!("ibc.core.commitment.v1.serde.rs");
+            }
+            pub mod v2 {
+                include_proto!("ibc.core.commitment.v2.rs");
+                #[cfg(feature = "serde")]
+                include_proto!("ibc.core.commitment.v2.serde.rs");
             }
         }
         pub mod connection {
@@ -145,11 +148,6 @@ pub mod ibc {
                 include_proto!("ibc.lightclients.localhost.v1.rs");
                 #[cfg(feature = "serde")]
                 include_proto!("ibc.lightclients.localhost.v1.serde.rs");
-            }
-            pub mod v2 {
-                include_proto!("ibc.lightclients.localhost.v2.rs");
-                #[cfg(feature = "serde")]
-                include_proto!("ibc.lightclients.localhost.v2.serde.rs");
             }
         }
         pub mod solomachine {

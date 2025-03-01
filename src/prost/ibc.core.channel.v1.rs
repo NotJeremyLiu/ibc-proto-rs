@@ -6,7 +6,6 @@
     all(feature = "json-schema", feature = "serde"),
     derive(::schemars::JsonSchema)
 )]
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Channel {
     /// current state of the channel end
@@ -25,10 +24,6 @@ pub struct Channel {
     /// opaque channel version, which is agreed upon during the handshake
     #[prost(string, tag = "5")]
     pub version: ::prost::alloc::string::String,
-    /// upgrade sequence indicates the latest upgrade attempt performed by this channel
-    /// the value of 0 indicates the channel has never been upgraded
-    #[prost(uint64, tag = "6")]
-    pub upgrade_sequence: u64,
 }
 impl ::prost::Name for Channel {
     const NAME: &'static str = "Channel";
@@ -42,7 +37,6 @@ impl ::prost::Name for Channel {
 }
 /// IdentifiedChannel defines a channel with additional port and channel
 /// identifier fields.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct IdentifiedChannel {
     /// current state of the channel end
@@ -67,10 +61,6 @@ pub struct IdentifiedChannel {
     /// channel identifier
     #[prost(string, tag = "7")]
     pub channel_id: ::prost::alloc::string::String,
-    /// upgrade sequence indicates the latest upgrade attempt performed by this channel
-    /// the value of 0 indicates the channel has never been upgraded
-    #[prost(uint64, tag = "8")]
-    pub upgrade_sequence: u64,
 }
 impl ::prost::Name for IdentifiedChannel {
     const NAME: &'static str = "IdentifiedChannel";
@@ -87,7 +77,6 @@ impl ::prost::Name for IdentifiedChannel {
     all(feature = "json-schema", feature = "serde"),
     derive(::schemars::JsonSchema)
 )]
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Counterparty {
     /// port on the counterparty chain which owns the other end of the channel.
@@ -108,7 +97,6 @@ impl ::prost::Name for Counterparty {
     }
 }
 /// Packet defines a type that carries data across different chains through IBC
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Packet {
     /// number corresponds to the order of sends and receives, where a Packet
@@ -152,7 +140,6 @@ impl ::prost::Name for Packet {
 /// packet commitments, acknowledgements, and receipts.
 /// Caller is responsible for knowing the context necessary to interpret this
 /// state as a commitment, acknowledgement, or a receipt.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PacketState {
     /// channel port identifier.
@@ -178,10 +165,9 @@ impl ::prost::Name for PacketState {
         "/ibc.core.channel.v1.PacketState".into()
     }
 }
-/// PacketId is an identifer for a unique Packet
+/// PacketId is an identifier for a unique Packet
 /// Source chains refer to packets by source port/channel
 /// Destination chains refer to packets by destination port/channel
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PacketId {
     /// channel port identifier
@@ -211,7 +197,6 @@ impl ::prost::Name for PacketId {
 /// The first byte of any message with this format will be the non-ASCII values
 /// `0xaa` (result) or `0xb2` (error). Implemented as defined by ICS:
 /// <https://github.com/cosmos/ibc/tree/master/spec/core/ics-004-channel-and-packet-semantics#acknowledgement-envelope>
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Acknowledgement {
     /// response contains either a result or an error and must be non-empty
@@ -221,7 +206,6 @@ pub struct Acknowledgement {
 /// Nested message and enum types in `Acknowledgement`.
 pub mod acknowledgement {
     /// response contains either a result or an error and must be non-empty
-    #[allow(clippy::derive_partial_eq_without_eq)]
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum Response {
         #[prost(bytes, tag = "21")]
@@ -241,15 +225,14 @@ impl ::prost::Name for Acknowledgement {
     }
 }
 /// Timeout defines an execution deadline structure for 04-channel handlers.
-/// This includes packet lifecycle handlers as well as the upgrade handshake handlers.
+/// This includes packet lifecycle handlers.
 /// A valid Timeout contains either one or both of a timestamp and block height (sequence).
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct Timeout {
-    /// block height after which the packet or upgrade times out
+    /// block height after which the packet times out
     #[prost(message, optional, tag = "1")]
     pub height: ::core::option::Option<super::super::client::v1::Height>,
-    /// block timestamp (in nanoseconds) after which the packet or upgrade times out
+    /// block timestamp (in nanoseconds) after which the packet times out
     #[prost(uint64, tag = "2")]
     pub timestamp: u64,
 }
@@ -263,26 +246,8 @@ impl ::prost::Name for Timeout {
         "/ibc.core.channel.v1.Timeout".into()
     }
 }
-/// Params defines the set of IBC channel parameters.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct Params {
-    /// the relative timeout after which channel upgrades will time out.
-    #[prost(message, optional, tag = "1")]
-    pub upgrade_timeout: ::core::option::Option<Timeout>,
-}
-impl ::prost::Name for Params {
-    const NAME: &'static str = "Params";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.Params".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.Params".into()
-    }
-}
 /// State defines if a channel is in one of the following states:
-/// CLOSED, INIT, TRYOPEN, OPEN, FLUSHING, FLUSHCOMPLETE or UNINITIALIZED.
+/// CLOSED, INIT, TRYOPEN, OPEN, or UNINITIALIZED.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum State {
@@ -298,10 +263,6 @@ pub enum State {
     /// A channel has been closed and can no longer be used to send or receive
     /// packets.
     Closed = 4,
-    /// A channel has just accepted the upgrade handshake attempt and is flushing in-flight packets.
-    Flushing = 5,
-    /// A channel has just completed flushing any in-flight packets.
-    Flushcomplete = 6,
 }
 impl State {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -310,13 +271,11 @@ impl State {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            State::UninitializedUnspecified => "STATE_UNINITIALIZED_UNSPECIFIED",
-            State::Init => "STATE_INIT",
-            State::Tryopen => "STATE_TRYOPEN",
-            State::Open => "STATE_OPEN",
-            State::Closed => "STATE_CLOSED",
-            State::Flushing => "STATE_FLUSHING",
-            State::Flushcomplete => "STATE_FLUSHCOMPLETE",
+            Self::UninitializedUnspecified => "STATE_UNINITIALIZED_UNSPECIFIED",
+            Self::Init => "STATE_INIT",
+            Self::Tryopen => "STATE_TRYOPEN",
+            Self::Open => "STATE_OPEN",
+            Self::Closed => "STATE_CLOSED",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -327,8 +286,6 @@ impl State {
             "STATE_TRYOPEN" => Some(Self::Tryopen),
             "STATE_OPEN" => Some(Self::Open),
             "STATE_CLOSED" => Some(Self::Closed),
-            "STATE_FLUSHING" => Some(Self::Flushing),
-            "STATE_FLUSHCOMPLETE" => Some(Self::Flushcomplete),
             _ => None,
         }
     }
@@ -352,9 +309,9 @@ impl Order {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            Order::NoneUnspecified => "ORDER_NONE_UNSPECIFIED",
-            Order::Unordered => "ORDER_UNORDERED",
-            Order::Ordered => "ORDER_ORDERED",
+            Self::NoneUnspecified => "ORDER_NONE_UNSPECIFIED",
+            Self::Unordered => "ORDER_UNORDERED",
+            Self::Ordered => "ORDER_ORDERED",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -368,7 +325,6 @@ impl Order {
     }
 }
 /// GenesisState defines the ibc channel submodule's genesis state.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GenesisState {
     #[prost(message, repeated, tag = "1")]
@@ -388,8 +344,6 @@ pub struct GenesisState {
     /// the sequence for the next generated channel identifier
     #[prost(uint64, tag = "8")]
     pub next_channel_sequence: u64,
-    #[prost(message, optional, tag = "9")]
-    pub params: ::core::option::Option<Params>,
 }
 impl ::prost::Name for GenesisState {
     const NAME: &'static str = "GenesisState";
@@ -403,7 +357,6 @@ impl ::prost::Name for GenesisState {
 }
 /// PacketSequence defines the genesis type necessary to retrieve and store
 /// next send and receive sequences.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PacketSequence {
     #[prost(string, tag = "1")]
@@ -423,79 +376,8 @@ impl ::prost::Name for PacketSequence {
         "/ibc.core.channel.v1.PacketSequence".into()
     }
 }
-/// Upgrade is a verifiable type which contains the relevant information
-/// for an attempted upgrade. It provides the proposed changes to the channel
-/// end, the timeout for this upgrade attempt and the next packet sequence
-/// which allows the counterparty to efficiently know the highest sequence it has received.
-/// The next sequence send is used for pruning and upgrading from unordered to ordered channels.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct Upgrade {
-    #[prost(message, optional, tag = "1")]
-    pub fields: ::core::option::Option<UpgradeFields>,
-    #[prost(message, optional, tag = "2")]
-    pub timeout: ::core::option::Option<Timeout>,
-    #[prost(uint64, tag = "3")]
-    pub next_sequence_send: u64,
-}
-impl ::prost::Name for Upgrade {
-    const NAME: &'static str = "Upgrade";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.Upgrade".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.Upgrade".into()
-    }
-}
-/// UpgradeFields are the fields in a channel end which may be changed
-/// during a channel upgrade.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpgradeFields {
-    #[prost(enumeration = "Order", tag = "1")]
-    pub ordering: i32,
-    #[prost(string, repeated, tag = "2")]
-    pub connection_hops: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(string, tag = "3")]
-    pub version: ::prost::alloc::string::String,
-}
-impl ::prost::Name for UpgradeFields {
-    const NAME: &'static str = "UpgradeFields";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.UpgradeFields".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.UpgradeFields".into()
-    }
-}
-/// ErrorReceipt defines a type which encapsulates the upgrade sequence and error associated with the
-/// upgrade handshake failure. When a channel upgrade handshake is aborted both chains are expected to increment to the
-/// next sequence.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ErrorReceipt {
-    /// the channel upgrade sequence
-    #[prost(uint64, tag = "1")]
-    pub sequence: u64,
-    /// the error message detailing the cause of failure
-    #[prost(string, tag = "2")]
-    pub message: ::prost::alloc::string::String,
-}
-impl ::prost::Name for ErrorReceipt {
-    const NAME: &'static str = "ErrorReceipt";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.ErrorReceipt".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.ErrorReceipt".into()
-    }
-}
 /// MsgChannelOpenInit defines an sdk.Msg to initialize a channel handshake. It
 /// is called by a relayer on Chain A.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenInit {
     #[prost(string, tag = "1")]
@@ -516,7 +398,6 @@ impl ::prost::Name for MsgChannelOpenInit {
     }
 }
 /// MsgChannelOpenInitResponse defines the Msg/ChannelOpenInit response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenInitResponse {
     #[prost(string, tag = "1")]
@@ -537,7 +418,6 @@ impl ::prost::Name for MsgChannelOpenInitResponse {
 /// MsgChannelOpenInit defines a msg sent by a Relayer to try to open a channel
 /// on Chain B. The version field within the Channel field has been deprecated. Its
 /// value will be ignored by core IBC.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenTry {
     #[prost(string, tag = "1")]
@@ -569,7 +449,6 @@ impl ::prost::Name for MsgChannelOpenTry {
     }
 }
 /// MsgChannelOpenTryResponse defines the Msg/ChannelOpenTry response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenTryResponse {
     #[prost(string, tag = "1")]
@@ -589,10 +468,6 @@ impl ::prost::Name for MsgChannelOpenTryResponse {
 }
 /// MsgChannelOpenAck defines a msg sent by a Relayer to Chain A to acknowledge
 /// the change of channel state to TRYOPEN on Chain B.
-/// WARNING: a channel upgrade MUST NOT initialize an upgrade for this channel
-/// in the same block as executing this message otherwise the counterparty will
-/// be incapable of opening.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenAck {
     #[prost(string, tag = "1")]
@@ -621,7 +496,6 @@ impl ::prost::Name for MsgChannelOpenAck {
     }
 }
 /// MsgChannelOpenAckResponse defines the Msg/ChannelOpenAck response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenAckResponse {}
 impl ::prost::Name for MsgChannelOpenAckResponse {
@@ -636,7 +510,6 @@ impl ::prost::Name for MsgChannelOpenAckResponse {
 }
 /// MsgChannelOpenConfirm defines a msg sent by a Relayer to Chain B to
 /// acknowledge the change of channel state to OPEN on Chain A.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenConfirm {
     #[prost(string, tag = "1")]
@@ -662,7 +535,6 @@ impl ::prost::Name for MsgChannelOpenConfirm {
 }
 /// MsgChannelOpenConfirmResponse defines the Msg/ChannelOpenConfirm response
 /// type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgChannelOpenConfirmResponse {}
 impl ::prost::Name for MsgChannelOpenConfirmResponse {
@@ -677,7 +549,6 @@ impl ::prost::Name for MsgChannelOpenConfirmResponse {
 }
 /// MsgChannelCloseInit defines a msg sent by a Relayer to Chain A
 /// to close a channel with Chain B.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelCloseInit {
     #[prost(string, tag = "1")]
@@ -698,7 +569,6 @@ impl ::prost::Name for MsgChannelCloseInit {
     }
 }
 /// MsgChannelCloseInitResponse defines the Msg/ChannelCloseInit response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgChannelCloseInitResponse {}
 impl ::prost::Name for MsgChannelCloseInitResponse {
@@ -713,7 +583,6 @@ impl ::prost::Name for MsgChannelCloseInitResponse {
 }
 /// MsgChannelCloseConfirm defines a msg sent by a Relayer to Chain B
 /// to acknowledge the change of channel state to CLOSED on Chain A.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgChannelCloseConfirm {
     #[prost(string, tag = "1")]
@@ -726,8 +595,6 @@ pub struct MsgChannelCloseConfirm {
     pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
     #[prost(string, tag = "5")]
     pub signer: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "6")]
-    pub counterparty_upgrade_sequence: u64,
 }
 impl ::prost::Name for MsgChannelCloseConfirm {
     const NAME: &'static str = "MsgChannelCloseConfirm";
@@ -741,7 +608,6 @@ impl ::prost::Name for MsgChannelCloseConfirm {
 }
 /// MsgChannelCloseConfirmResponse defines the Msg/ChannelCloseConfirm response
 /// type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgChannelCloseConfirmResponse {}
 impl ::prost::Name for MsgChannelCloseConfirmResponse {
@@ -755,7 +621,6 @@ impl ::prost::Name for MsgChannelCloseConfirmResponse {
     }
 }
 /// MsgRecvPacket receives incoming IBC packet
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgRecvPacket {
     #[prost(message, optional, tag = "1")]
@@ -778,7 +643,6 @@ impl ::prost::Name for MsgRecvPacket {
     }
 }
 /// MsgRecvPacketResponse defines the Msg/RecvPacket response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgRecvPacketResponse {
     #[prost(enumeration = "ResponseResultType", tag = "1")]
@@ -795,7 +659,6 @@ impl ::prost::Name for MsgRecvPacketResponse {
     }
 }
 /// MsgTimeout receives timed-out packet
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgTimeout {
     #[prost(message, optional, tag = "1")]
@@ -820,7 +683,6 @@ impl ::prost::Name for MsgTimeout {
     }
 }
 /// MsgTimeoutResponse defines the Msg/Timeout response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgTimeoutResponse {
     #[prost(enumeration = "ResponseResultType", tag = "1")]
@@ -837,7 +699,6 @@ impl ::prost::Name for MsgTimeoutResponse {
     }
 }
 /// MsgTimeoutOnClose timed-out packet upon counterparty channel closure.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgTimeoutOnClose {
     #[prost(message, optional, tag = "1")]
@@ -852,8 +713,6 @@ pub struct MsgTimeoutOnClose {
     pub next_sequence_recv: u64,
     #[prost(string, tag = "6")]
     pub signer: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "7")]
-    pub counterparty_upgrade_sequence: u64,
 }
 impl ::prost::Name for MsgTimeoutOnClose {
     const NAME: &'static str = "MsgTimeoutOnClose";
@@ -866,7 +725,6 @@ impl ::prost::Name for MsgTimeoutOnClose {
     }
 }
 /// MsgTimeoutOnCloseResponse defines the Msg/TimeoutOnClose response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgTimeoutOnCloseResponse {
     #[prost(enumeration = "ResponseResultType", tag = "1")]
@@ -883,7 +741,6 @@ impl ::prost::Name for MsgTimeoutOnCloseResponse {
     }
 }
 /// MsgAcknowledgement receives incoming IBC acknowledgement
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MsgAcknowledgement {
     #[prost(message, optional, tag = "1")]
@@ -908,7 +765,6 @@ impl ::prost::Name for MsgAcknowledgement {
     }
 }
 /// MsgAcknowledgementResponse defines the Msg/Acknowledgement response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct MsgAcknowledgementResponse {
     #[prost(enumeration = "ResponseResultType", tag = "1")]
@@ -922,406 +778,6 @@ impl ::prost::Name for MsgAcknowledgementResponse {
     }
     fn type_url() -> ::prost::alloc::string::String {
         "/ibc.core.channel.v1.MsgAcknowledgementResponse".into()
-    }
-}
-/// MsgChannelUpgradeInit defines the request type for the ChannelUpgradeInit rpc
-/// WARNING: Initializing a channel upgrade in the same block as opening the channel
-/// may result in the counterparty being incapable of opening.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeInit {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub fields: ::core::option::Option<UpgradeFields>,
-    #[prost(string, tag = "4")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeInit {
-    const NAME: &'static str = "MsgChannelUpgradeInit";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeInit".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeInit".into()
-    }
-}
-/// MsgChannelUpgradeInitResponse defines the MsgChannelUpgradeInit response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeInitResponse {
-    #[prost(message, optional, tag = "1")]
-    pub upgrade: ::core::option::Option<Upgrade>,
-    #[prost(uint64, tag = "2")]
-    pub upgrade_sequence: u64,
-}
-impl ::prost::Name for MsgChannelUpgradeInitResponse {
-    const NAME: &'static str = "MsgChannelUpgradeInitResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeInitResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeInitResponse".into()
-    }
-}
-/// MsgChannelUpgradeTry defines the request type for the ChannelUpgradeTry rpc
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeTry {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "3")]
-    pub proposed_upgrade_connection_hops: ::prost::alloc::vec::Vec<
-        ::prost::alloc::string::String,
-    >,
-    #[prost(message, optional, tag = "4")]
-    pub counterparty_upgrade_fields: ::core::option::Option<UpgradeFields>,
-    #[prost(uint64, tag = "5")]
-    pub counterparty_upgrade_sequence: u64,
-    #[prost(bytes = "vec", tag = "6")]
-    pub proof_channel: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "7")]
-    pub proof_upgrade: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "8")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    #[prost(string, tag = "9")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeTry {
-    const NAME: &'static str = "MsgChannelUpgradeTry";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeTry".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeTry".into()
-    }
-}
-/// MsgChannelUpgradeTryResponse defines the MsgChannelUpgradeTry response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeTryResponse {
-    #[prost(message, optional, tag = "1")]
-    pub upgrade: ::core::option::Option<Upgrade>,
-    #[prost(uint64, tag = "2")]
-    pub upgrade_sequence: u64,
-    #[prost(enumeration = "ResponseResultType", tag = "3")]
-    pub result: i32,
-}
-impl ::prost::Name for MsgChannelUpgradeTryResponse {
-    const NAME: &'static str = "MsgChannelUpgradeTryResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeTryResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeTryResponse".into()
-    }
-}
-/// MsgChannelUpgradeAck defines the request type for the ChannelUpgradeAck rpc
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeAck {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub counterparty_upgrade: ::core::option::Option<Upgrade>,
-    #[prost(bytes = "vec", tag = "4")]
-    pub proof_channel: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "5")]
-    pub proof_upgrade: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "6")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    #[prost(string, tag = "7")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeAck {
-    const NAME: &'static str = "MsgChannelUpgradeAck";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeAck".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeAck".into()
-    }
-}
-/// MsgChannelUpgradeAckResponse defines MsgChannelUpgradeAck response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeAckResponse {
-    #[prost(enumeration = "ResponseResultType", tag = "1")]
-    pub result: i32,
-}
-impl ::prost::Name for MsgChannelUpgradeAckResponse {
-    const NAME: &'static str = "MsgChannelUpgradeAckResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeAckResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeAckResponse".into()
-    }
-}
-/// MsgChannelUpgradeConfirm defines the request type for the ChannelUpgradeConfirm rpc
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeConfirm {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(enumeration = "State", tag = "3")]
-    pub counterparty_channel_state: i32,
-    #[prost(message, optional, tag = "4")]
-    pub counterparty_upgrade: ::core::option::Option<Upgrade>,
-    #[prost(bytes = "vec", tag = "5")]
-    pub proof_channel: ::prost::alloc::vec::Vec<u8>,
-    #[prost(bytes = "vec", tag = "6")]
-    pub proof_upgrade: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "7")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    #[prost(string, tag = "8")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeConfirm {
-    const NAME: &'static str = "MsgChannelUpgradeConfirm";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeConfirm".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeConfirm".into()
-    }
-}
-/// MsgChannelUpgradeConfirmResponse defines MsgChannelUpgradeConfirm response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeConfirmResponse {
-    #[prost(enumeration = "ResponseResultType", tag = "1")]
-    pub result: i32,
-}
-impl ::prost::Name for MsgChannelUpgradeConfirmResponse {
-    const NAME: &'static str = "MsgChannelUpgradeConfirmResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeConfirmResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeConfirmResponse".into()
-    }
-}
-/// MsgChannelUpgradeOpen defines the request type for the ChannelUpgradeOpen rpc
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeOpen {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(enumeration = "State", tag = "3")]
-    pub counterparty_channel_state: i32,
-    #[prost(uint64, tag = "4")]
-    pub counterparty_upgrade_sequence: u64,
-    #[prost(bytes = "vec", tag = "5")]
-    pub proof_channel: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "6")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    #[prost(string, tag = "7")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeOpen {
-    const NAME: &'static str = "MsgChannelUpgradeOpen";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeOpen".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeOpen".into()
-    }
-}
-/// MsgChannelUpgradeOpenResponse defines the MsgChannelUpgradeOpen response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeOpenResponse {}
-impl ::prost::Name for MsgChannelUpgradeOpenResponse {
-    const NAME: &'static str = "MsgChannelUpgradeOpenResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeOpenResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeOpenResponse".into()
-    }
-}
-/// MsgChannelUpgradeTimeout defines the request type for the ChannelUpgradeTimeout rpc
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeTimeout {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub counterparty_channel: ::core::option::Option<Channel>,
-    #[prost(bytes = "vec", tag = "4")]
-    pub proof_channel: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "5")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    #[prost(string, tag = "6")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeTimeout {
-    const NAME: &'static str = "MsgChannelUpgradeTimeout";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeTimeout".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeTimeout".into()
-    }
-}
-/// MsgChannelUpgradeTimeoutRepsonse defines the MsgChannelUpgradeTimeout response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeTimeoutResponse {}
-impl ::prost::Name for MsgChannelUpgradeTimeoutResponse {
-    const NAME: &'static str = "MsgChannelUpgradeTimeoutResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeTimeoutResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeTimeoutResponse".into()
-    }
-}
-/// MsgChannelUpgradeCancel defines the request type for the ChannelUpgradeCancel rpc
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeCancel {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "3")]
-    pub error_receipt: ::core::option::Option<ErrorReceipt>,
-    #[prost(bytes = "vec", tag = "4")]
-    pub proof_error_receipt: ::prost::alloc::vec::Vec<u8>,
-    #[prost(message, optional, tag = "5")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-    #[prost(string, tag = "6")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgChannelUpgradeCancel {
-    const NAME: &'static str = "MsgChannelUpgradeCancel";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeCancel".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeCancel".into()
-    }
-}
-/// MsgChannelUpgradeCancelResponse defines the MsgChannelUpgradeCancel response type
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgChannelUpgradeCancelResponse {}
-impl ::prost::Name for MsgChannelUpgradeCancelResponse {
-    const NAME: &'static str = "MsgChannelUpgradeCancelResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgChannelUpgradeCancelResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgChannelUpgradeCancelResponse".into()
-    }
-}
-/// MsgUpdateParams is the MsgUpdateParams request type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgUpdateParams {
-    /// authority is the address that controls the module (defaults to x/gov unless overwritten).
-    #[prost(string, tag = "1")]
-    pub authority: ::prost::alloc::string::String,
-    /// params defines the channel parameters to update.
-    ///
-    /// NOTE: All parameters must be supplied.
-    #[prost(message, optional, tag = "2")]
-    pub params: ::core::option::Option<Params>,
-}
-impl ::prost::Name for MsgUpdateParams {
-    const NAME: &'static str = "MsgUpdateParams";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgUpdateParams".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgUpdateParams".into()
-    }
-}
-/// MsgUpdateParamsResponse defines the MsgUpdateParams response type.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgUpdateParamsResponse {}
-impl ::prost::Name for MsgUpdateParamsResponse {
-    const NAME: &'static str = "MsgUpdateParamsResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgUpdateParamsResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgUpdateParamsResponse".into()
-    }
-}
-/// MsgPruneAcknowledgements defines the request type for the PruneAcknowledgements rpc.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MsgPruneAcknowledgements {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-    #[prost(uint64, tag = "3")]
-    pub limit: u64,
-    #[prost(string, tag = "4")]
-    pub signer: ::prost::alloc::string::String,
-}
-impl ::prost::Name for MsgPruneAcknowledgements {
-    const NAME: &'static str = "MsgPruneAcknowledgements";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgPruneAcknowledgements".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgPruneAcknowledgements".into()
-    }
-}
-/// MsgPruneAcknowledgementsResponse defines the response type for the PruneAcknowledgements rpc.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct MsgPruneAcknowledgementsResponse {
-    /// Number of sequences pruned (includes both packet acknowledgements and packet receipts where appropriate).
-    #[prost(uint64, tag = "1")]
-    pub total_pruned_sequences: u64,
-    /// Number of sequences left after pruning.
-    #[prost(uint64, tag = "2")]
-    pub total_remaining_sequences: u64,
-}
-impl ::prost::Name for MsgPruneAcknowledgementsResponse {
-    const NAME: &'static str = "MsgPruneAcknowledgementsResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.MsgPruneAcknowledgementsResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.MsgPruneAcknowledgementsResponse".into()
     }
 }
 /// ResponseResultType defines the possible outcomes of the execution of a message
@@ -1344,10 +800,10 @@ impl ResponseResultType {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            ResponseResultType::Unspecified => "RESPONSE_RESULT_TYPE_UNSPECIFIED",
-            ResponseResultType::Noop => "RESPONSE_RESULT_TYPE_NOOP",
-            ResponseResultType::Success => "RESPONSE_RESULT_TYPE_SUCCESS",
-            ResponseResultType::Failure => "RESPONSE_RESULT_TYPE_FAILURE",
+            Self::Unspecified => "RESPONSE_RESULT_TYPE_UNSPECIFIED",
+            Self::Noop => "RESPONSE_RESULT_TYPE_NOOP",
+            Self::Success => "RESPONSE_RESULT_TYPE_SUCCESS",
+            Self::Failure => "RESPONSE_RESULT_TYPE_FAILURE",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -1364,7 +820,13 @@ impl ResponseResultType {
 /// Generated client implementations.
 #[cfg(feature = "client")]
 pub mod msg_client {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
     use tonic::codegen::*;
     use tonic::codegen::http::Uri;
     /// Msg defines the ibc/channel Msg service.
@@ -1388,8 +850,8 @@ pub mod msg_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
-        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -1414,7 +876,7 @@ pub mod msg_client {
             >,
             <T as tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             MsgClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -1461,8 +923,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1487,8 +948,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1513,8 +973,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1539,8 +998,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1567,8 +1025,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1594,8 +1051,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1622,8 +1078,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1648,8 +1103,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1674,8 +1128,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1700,8 +1153,7 @@ pub mod msg_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -1714,264 +1166,22 @@ pub mod msg_client {
                 .insert(GrpcMethod::new("ibc.core.channel.v1.Msg", "Acknowledgement"));
             self.inner.unary(req, path, codec).await
         }
-        /// ChannelUpgradeInit defines a rpc handler method for MsgChannelUpgradeInit.
-        pub async fn channel_upgrade_init(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeInit>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeInitResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeInit",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeInit"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelUpgradeTry defines a rpc handler method for MsgChannelUpgradeTry.
-        pub async fn channel_upgrade_try(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeTry>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeTryResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeTry",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeTry"));
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelUpgradeAck defines a rpc handler method for MsgChannelUpgradeAck.
-        pub async fn channel_upgrade_ack(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeAck>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeAckResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeAck",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeAck"));
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelUpgradeConfirm defines a rpc handler method for MsgChannelUpgradeConfirm.
-        pub async fn channel_upgrade_confirm(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeConfirm>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeConfirmResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeConfirm",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeConfirm"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelUpgradeOpen defines a rpc handler method for MsgChannelUpgradeOpen.
-        pub async fn channel_upgrade_open(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeOpen>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeOpenResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeOpen",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeOpen"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelUpgradeTimeout defines a rpc handler method for MsgChannelUpgradeTimeout.
-        pub async fn channel_upgrade_timeout(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeTimeout>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeTimeoutResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeTimeout",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeTimeout"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelUpgradeCancel defines a rpc handler method for MsgChannelUpgradeCancel.
-        pub async fn channel_upgrade_cancel(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgChannelUpgradeCancel>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeCancelResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeCancel",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "ChannelUpgradeCancel"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// UpdateChannelParams defines a rpc handler method for MsgUpdateParams.
-        pub async fn update_channel_params(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgUpdateParams>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgUpdateParamsResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/UpdateChannelParams",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "UpdateChannelParams"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        /// PruneAcknowledgements defines a rpc handler method for MsgPruneAcknowledgements.
-        pub async fn prune_acknowledgements(
-            &mut self,
-            request: impl tonic::IntoRequest<super::MsgPruneAcknowledgements>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgPruneAcknowledgementsResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Msg/PruneAcknowledgements",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("ibc.core.channel.v1.Msg", "PruneAcknowledgements"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
     }
 }
 /// Generated server implementations.
 #[cfg(feature = "server")]
 pub mod msg_server {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with MsgServer.
     #[async_trait]
-    pub trait Msg: Send + Sync + 'static {
+    pub trait Msg: std::marker::Send + std::marker::Sync + 'static {
         /// ChannelOpenInit defines a rpc handler method for MsgChannelOpenInit.
         async fn channel_open_init(
             &self,
@@ -2053,89 +1263,17 @@ pub mod msg_server {
             tonic::Response<super::MsgAcknowledgementResponse>,
             tonic::Status,
         >;
-        /// ChannelUpgradeInit defines a rpc handler method for MsgChannelUpgradeInit.
-        async fn channel_upgrade_init(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeInit>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeInitResponse>,
-            tonic::Status,
-        >;
-        /// ChannelUpgradeTry defines a rpc handler method for MsgChannelUpgradeTry.
-        async fn channel_upgrade_try(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeTry>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeTryResponse>,
-            tonic::Status,
-        >;
-        /// ChannelUpgradeAck defines a rpc handler method for MsgChannelUpgradeAck.
-        async fn channel_upgrade_ack(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeAck>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeAckResponse>,
-            tonic::Status,
-        >;
-        /// ChannelUpgradeConfirm defines a rpc handler method for MsgChannelUpgradeConfirm.
-        async fn channel_upgrade_confirm(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeConfirm>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeConfirmResponse>,
-            tonic::Status,
-        >;
-        /// ChannelUpgradeOpen defines a rpc handler method for MsgChannelUpgradeOpen.
-        async fn channel_upgrade_open(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeOpen>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeOpenResponse>,
-            tonic::Status,
-        >;
-        /// ChannelUpgradeTimeout defines a rpc handler method for MsgChannelUpgradeTimeout.
-        async fn channel_upgrade_timeout(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeTimeout>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeTimeoutResponse>,
-            tonic::Status,
-        >;
-        /// ChannelUpgradeCancel defines a rpc handler method for MsgChannelUpgradeCancel.
-        async fn channel_upgrade_cancel(
-            &self,
-            request: tonic::Request<super::MsgChannelUpgradeCancel>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgChannelUpgradeCancelResponse>,
-            tonic::Status,
-        >;
-        /// UpdateChannelParams defines a rpc handler method for MsgUpdateParams.
-        async fn update_channel_params(
-            &self,
-            request: tonic::Request<super::MsgUpdateParams>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgUpdateParamsResponse>,
-            tonic::Status,
-        >;
-        /// PruneAcknowledgements defines a rpc handler method for MsgPruneAcknowledgements.
-        async fn prune_acknowledgements(
-            &self,
-            request: tonic::Request<super::MsgPruneAcknowledgements>,
-        ) -> std::result::Result<
-            tonic::Response<super::MsgPruneAcknowledgementsResponse>,
-            tonic::Status,
-        >;
     }
     /// Msg defines the ibc/channel Msg service.
     #[derive(Debug)]
-    pub struct MsgServer<T: Msg> {
+    pub struct MsgServer<T> {
         inner: Arc<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
         max_decoding_message_size: Option<usize>,
         max_encoding_message_size: Option<usize>,
     }
-    impl<T: Msg> MsgServer<T> {
+    impl<T> MsgServer<T> {
         pub fn new(inner: T) -> Self {
             Self::from_arc(Arc::new(inner))
         }
@@ -2189,8 +1327,8 @@ pub mod msg_server {
     impl<T, B> tonic::codegen::Service<http::Request<B>> for MsgServer<T>
     where
         T: Msg,
-        B: Body + Send + 'static,
-        B::Error: Into<StdError> + Send + 'static,
+        B: Body + std::marker::Send + 'static,
+        B::Error: Into<StdError> + std::marker::Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = std::convert::Infallible;
@@ -2637,424 +1775,27 @@ pub mod msg_server {
                     };
                     Box::pin(fut)
                 }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeInit" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeInitSvc<T: Msg>(pub Arc<T>);
-                    impl<
-                        T: Msg,
-                    > tonic::server::UnaryService<super::MsgChannelUpgradeInit>
-                    for ChannelUpgradeInitSvc<T> {
-                        type Response = super::MsgChannelUpgradeInitResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeInit>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_init(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeInitSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeTry" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeTrySvc<T: Msg>(pub Arc<T>);
-                    impl<T: Msg> tonic::server::UnaryService<super::MsgChannelUpgradeTry>
-                    for ChannelUpgradeTrySvc<T> {
-                        type Response = super::MsgChannelUpgradeTryResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeTry>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_try(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeTrySvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeAck" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeAckSvc<T: Msg>(pub Arc<T>);
-                    impl<T: Msg> tonic::server::UnaryService<super::MsgChannelUpgradeAck>
-                    for ChannelUpgradeAckSvc<T> {
-                        type Response = super::MsgChannelUpgradeAckResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeAck>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_ack(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeAckSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeConfirm" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeConfirmSvc<T: Msg>(pub Arc<T>);
-                    impl<
-                        T: Msg,
-                    > tonic::server::UnaryService<super::MsgChannelUpgradeConfirm>
-                    for ChannelUpgradeConfirmSvc<T> {
-                        type Response = super::MsgChannelUpgradeConfirmResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeConfirm>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_confirm(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeConfirmSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeOpen" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeOpenSvc<T: Msg>(pub Arc<T>);
-                    impl<
-                        T: Msg,
-                    > tonic::server::UnaryService<super::MsgChannelUpgradeOpen>
-                    for ChannelUpgradeOpenSvc<T> {
-                        type Response = super::MsgChannelUpgradeOpenResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeOpen>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_open(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeOpenSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeTimeout" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeTimeoutSvc<T: Msg>(pub Arc<T>);
-                    impl<
-                        T: Msg,
-                    > tonic::server::UnaryService<super::MsgChannelUpgradeTimeout>
-                    for ChannelUpgradeTimeoutSvc<T> {
-                        type Response = super::MsgChannelUpgradeTimeoutResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeTimeout>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_timeout(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeTimeoutSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/ChannelUpgradeCancel" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelUpgradeCancelSvc<T: Msg>(pub Arc<T>);
-                    impl<
-                        T: Msg,
-                    > tonic::server::UnaryService<super::MsgChannelUpgradeCancel>
-                    for ChannelUpgradeCancelSvc<T> {
-                        type Response = super::MsgChannelUpgradeCancelResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgChannelUpgradeCancel>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::channel_upgrade_cancel(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelUpgradeCancelSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/UpdateChannelParams" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateChannelParamsSvc<T: Msg>(pub Arc<T>);
-                    impl<T: Msg> tonic::server::UnaryService<super::MsgUpdateParams>
-                    for UpdateChannelParamsSvc<T> {
-                        type Response = super::MsgUpdateParamsResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgUpdateParams>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::update_channel_params(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateChannelParamsSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Msg/PruneAcknowledgements" => {
-                    #[allow(non_camel_case_types)]
-                    struct PruneAcknowledgementsSvc<T: Msg>(pub Arc<T>);
-                    impl<
-                        T: Msg,
-                    > tonic::server::UnaryService<super::MsgPruneAcknowledgements>
-                    for PruneAcknowledgementsSvc<T> {
-                        type Response = super::MsgPruneAcknowledgementsResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::MsgPruneAcknowledgements>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Msg>::prune_acknowledgements(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = PruneAcknowledgementsSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
                 _ => {
                     Box::pin(async move {
-                        Ok(
-                            http::Response::builder()
-                                .status(200)
-                                .header("grpc-status", tonic::Code::Unimplemented as i32)
-                                .header(
-                                    http::header::CONTENT_TYPE,
-                                    tonic::metadata::GRPC_CONTENT_TYPE,
-                                )
-                                .body(empty_body())
-                                .unwrap(),
-                        )
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
                     })
                 }
             }
         }
     }
-    impl<T: Msg> Clone for MsgServer<T> {
+    impl<T> Clone for MsgServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self {
@@ -3066,12 +1807,13 @@ pub mod msg_server {
             }
         }
     }
-    impl<T: Msg> tonic::server::NamedService for MsgServer<T> {
-        const NAME: &'static str = "ibc.core.channel.v1.Msg";
+    /// Generated gRPC service name
+    pub const SERVICE_NAME: &str = "ibc.core.channel.v1.Msg";
+    impl<T> tonic::server::NamedService for MsgServer<T> {
+        const NAME: &'static str = SERVICE_NAME;
     }
 }
 /// QueryChannelRequest is the request type for the Query/Channel RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelRequest {
     /// port unique identifier
@@ -3094,7 +1836,6 @@ impl ::prost::Name for QueryChannelRequest {
 /// QueryChannelResponse is the response type for the Query/Channel RPC method.
 /// Besides the Channel end, it includes a proof and the height from which the
 /// proof was retrieved.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelResponse {
     /// channel associated with the request identifiers
@@ -3118,7 +1859,6 @@ impl ::prost::Name for QueryChannelResponse {
     }
 }
 /// QueryChannelsRequest is the request type for the Query/Channels RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelsRequest {
     /// pagination request
@@ -3138,7 +1878,6 @@ impl ::prost::Name for QueryChannelsRequest {
     }
 }
 /// QueryChannelsResponse is the response type for the Query/Channels RPC method.
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelsResponse {
     /// list of stored channels of the chain.
@@ -3165,7 +1904,6 @@ impl ::prost::Name for QueryChannelsResponse {
 }
 /// QueryConnectionChannelsRequest is the request type for the
 /// Query/QueryConnectionChannels RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryConnectionChannelsRequest {
     /// connection unique identifier
@@ -3189,7 +1927,6 @@ impl ::prost::Name for QueryConnectionChannelsRequest {
 }
 /// QueryConnectionChannelsResponse is the Response type for the
 /// Query/QueryConnectionChannels RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryConnectionChannelsResponse {
     /// list of channels associated with a connection.
@@ -3216,7 +1953,6 @@ impl ::prost::Name for QueryConnectionChannelsResponse {
 }
 /// QueryChannelClientStateRequest is the request type for the Query/ClientState
 /// RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelClientStateRequest {
     /// port unique identifier
@@ -3238,7 +1974,6 @@ impl ::prost::Name for QueryChannelClientStateRequest {
 }
 /// QueryChannelClientStateResponse is the Response type for the
 /// Query/QueryChannelClientState RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelClientStateResponse {
     /// client state associated with the channel
@@ -3265,7 +2000,6 @@ impl ::prost::Name for QueryChannelClientStateResponse {
 }
 /// QueryChannelConsensusStateRequest is the request type for the
 /// Query/ConsensusState RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelConsensusStateRequest {
     /// port unique identifier
@@ -3293,7 +2027,6 @@ impl ::prost::Name for QueryChannelConsensusStateRequest {
 }
 /// QueryChannelClientStateResponse is the Response type for the
 /// Query/QueryChannelClientState RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryChannelConsensusStateResponse {
     /// consensus state associated with the channel
@@ -3323,7 +2056,6 @@ impl ::prost::Name for QueryChannelConsensusStateResponse {
 }
 /// QueryPacketCommitmentRequest is the request type for the
 /// Query/PacketCommitment RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketCommitmentRequest {
     /// port unique identifier
@@ -3349,7 +2081,6 @@ impl ::prost::Name for QueryPacketCommitmentRequest {
 /// QueryPacketCommitmentResponse defines the client query response for a packet
 /// which also includes a proof and the height from which the proof was
 /// retrieved
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketCommitmentResponse {
     /// packet associated with the request fields
@@ -3374,7 +2105,6 @@ impl ::prost::Name for QueryPacketCommitmentResponse {
 }
 /// QueryPacketCommitmentsRequest is the request type for the
 /// Query/QueryPacketCommitments RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketCommitmentsRequest {
     /// port unique identifier
@@ -3401,7 +2131,6 @@ impl ::prost::Name for QueryPacketCommitmentsRequest {
 }
 /// QueryPacketCommitmentsResponse is the request type for the
 /// Query/QueryPacketCommitments RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketCommitmentsResponse {
     #[prost(message, repeated, tag = "1")]
@@ -3427,7 +2156,6 @@ impl ::prost::Name for QueryPacketCommitmentsResponse {
 }
 /// QueryPacketReceiptRequest is the request type for the
 /// Query/PacketReceipt RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketReceiptRequest {
     /// port unique identifier
@@ -3453,7 +2181,6 @@ impl ::prost::Name for QueryPacketReceiptRequest {
 /// QueryPacketReceiptResponse defines the client query response for a packet
 /// receipt which also includes a proof, and the height from which the proof was
 /// retrieved
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketReceiptResponse {
     /// success flag for if receipt exists
@@ -3478,7 +2205,6 @@ impl ::prost::Name for QueryPacketReceiptResponse {
 }
 /// QueryPacketAcknowledgementRequest is the request type for the
 /// Query/PacketAcknowledgement RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketAcknowledgementRequest {
     /// port unique identifier
@@ -3504,7 +2230,6 @@ impl ::prost::Name for QueryPacketAcknowledgementRequest {
 /// QueryPacketAcknowledgementResponse defines the client query response for a
 /// packet which also includes a proof and the height from which the
 /// proof was retrieved
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketAcknowledgementResponse {
     /// packet associated with the request fields
@@ -3529,7 +2254,6 @@ impl ::prost::Name for QueryPacketAcknowledgementResponse {
 }
 /// QueryPacketAcknowledgementsRequest is the request type for the
 /// Query/QueryPacketCommitments RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketAcknowledgementsRequest {
     /// port unique identifier
@@ -3559,7 +2283,6 @@ impl ::prost::Name for QueryPacketAcknowledgementsRequest {
 }
 /// QueryPacketAcknowledgemetsResponse is the request type for the
 /// Query/QueryPacketAcknowledgements RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryPacketAcknowledgementsResponse {
     #[prost(message, repeated, tag = "1")]
@@ -3585,7 +2308,6 @@ impl ::prost::Name for QueryPacketAcknowledgementsResponse {
 }
 /// QueryUnreceivedPacketsRequest is the request type for the
 /// Query/UnreceivedPackets RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryUnreceivedPacketsRequest {
     /// port unique identifier
@@ -3610,7 +2332,6 @@ impl ::prost::Name for QueryUnreceivedPacketsRequest {
 }
 /// QueryUnreceivedPacketsResponse is the response type for the
 /// Query/UnreceivedPacketCommitments RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryUnreceivedPacketsResponse {
     /// list of unreceived packet sequences
@@ -3632,7 +2353,6 @@ impl ::prost::Name for QueryUnreceivedPacketsResponse {
 }
 /// QueryUnreceivedAcks is the request type for the
 /// Query/UnreceivedAcks RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryUnreceivedAcksRequest {
     /// port unique identifier
@@ -3657,7 +2377,6 @@ impl ::prost::Name for QueryUnreceivedAcksRequest {
 }
 /// QueryUnreceivedAcksResponse is the response type for the
 /// Query/UnreceivedAcks RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryUnreceivedAcksResponse {
     /// list of unreceived acknowledgement sequences
@@ -3679,7 +2398,6 @@ impl ::prost::Name for QueryUnreceivedAcksResponse {
 }
 /// QueryNextSequenceReceiveRequest is the request type for the
 /// Query/QueryNextSequenceReceiveRequest RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryNextSequenceReceiveRequest {
     /// port unique identifier
@@ -3701,7 +2419,6 @@ impl ::prost::Name for QueryNextSequenceReceiveRequest {
 }
 /// QuerySequenceResponse is the response type for the
 /// Query/QueryNextSequenceReceiveResponse RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryNextSequenceReceiveResponse {
     /// next sequence receive number
@@ -3726,7 +2443,6 @@ impl ::prost::Name for QueryNextSequenceReceiveResponse {
 }
 /// QueryNextSequenceSendRequest is the request type for the
 /// Query/QueryNextSequenceSend RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryNextSequenceSendRequest {
     /// port unique identifier
@@ -3748,7 +2464,6 @@ impl ::prost::Name for QueryNextSequenceSendRequest {
 }
 /// QueryNextSequenceSendResponse is the request type for the
 /// Query/QueryNextSequenceSend RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct QueryNextSequenceSendResponse {
     /// next sequence send number
@@ -3771,126 +2486,16 @@ impl ::prost::Name for QueryNextSequenceSendResponse {
         "/ibc.core.channel.v1.QueryNextSequenceSendResponse".into()
     }
 }
-/// QueryUpgradeErrorRequest is the request type for the Query/QueryUpgradeError RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUpgradeErrorRequest {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-}
-impl ::prost::Name for QueryUpgradeErrorRequest {
-    const NAME: &'static str = "QueryUpgradeErrorRequest";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.QueryUpgradeErrorRequest".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.QueryUpgradeErrorRequest".into()
-    }
-}
-/// QueryUpgradeErrorResponse is the response type for the Query/QueryUpgradeError RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUpgradeErrorResponse {
-    #[prost(message, optional, tag = "1")]
-    pub error_receipt: ::core::option::Option<ErrorReceipt>,
-    /// merkle proof of existence
-    #[prost(bytes = "vec", tag = "2")]
-    pub proof: ::prost::alloc::vec::Vec<u8>,
-    /// height at which the proof was retrieved
-    #[prost(message, optional, tag = "3")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-}
-impl ::prost::Name for QueryUpgradeErrorResponse {
-    const NAME: &'static str = "QueryUpgradeErrorResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.QueryUpgradeErrorResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.QueryUpgradeErrorResponse".into()
-    }
-}
-/// QueryUpgradeRequest is the request type for the QueryUpgradeRequest RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUpgradeRequest {
-    #[prost(string, tag = "1")]
-    pub port_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub channel_id: ::prost::alloc::string::String,
-}
-impl ::prost::Name for QueryUpgradeRequest {
-    const NAME: &'static str = "QueryUpgradeRequest";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.QueryUpgradeRequest".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.QueryUpgradeRequest".into()
-    }
-}
-/// QueryUpgradeResponse is the response type for the QueryUpgradeResponse RPC method
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct QueryUpgradeResponse {
-    #[prost(message, optional, tag = "1")]
-    pub upgrade: ::core::option::Option<Upgrade>,
-    /// merkle proof of existence
-    #[prost(bytes = "vec", tag = "2")]
-    pub proof: ::prost::alloc::vec::Vec<u8>,
-    /// height at which the proof was retrieved
-    #[prost(message, optional, tag = "3")]
-    pub proof_height: ::core::option::Option<super::super::client::v1::Height>,
-}
-impl ::prost::Name for QueryUpgradeResponse {
-    const NAME: &'static str = "QueryUpgradeResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.QueryUpgradeResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.QueryUpgradeResponse".into()
-    }
-}
-/// QueryChannelParamsRequest is the request type for the Query/ChannelParams RPC method.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct QueryChannelParamsRequest {}
-impl ::prost::Name for QueryChannelParamsRequest {
-    const NAME: &'static str = "QueryChannelParamsRequest";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.QueryChannelParamsRequest".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.QueryChannelParamsRequest".into()
-    }
-}
-/// QueryChannelParamsResponse is the response type for the Query/ChannelParams RPC method.
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
-pub struct QueryChannelParamsResponse {
-    /// params defines the parameters of the module.
-    #[prost(message, optional, tag = "1")]
-    pub params: ::core::option::Option<Params>,
-}
-impl ::prost::Name for QueryChannelParamsResponse {
-    const NAME: &'static str = "QueryChannelParamsResponse";
-    const PACKAGE: &'static str = "ibc.core.channel.v1";
-    fn full_name() -> ::prost::alloc::string::String {
-        "ibc.core.channel.v1.QueryChannelParamsResponse".into()
-    }
-    fn type_url() -> ::prost::alloc::string::String {
-        "/ibc.core.channel.v1.QueryChannelParamsResponse".into()
-    }
-}
 /// Generated client implementations.
 #[cfg(feature = "client")]
 pub mod query_client {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
     use tonic::codegen::*;
     use tonic::codegen::http::Uri;
     /// Query provides defines the gRPC querier service
@@ -3914,8 +2519,8 @@ pub mod query_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
-        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+        T::ResponseBody: Body<Data = Bytes> + std::marker::Send + 'static,
+        <T::ResponseBody as Body>::Error: Into<StdError> + std::marker::Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -3940,7 +2545,7 @@ pub mod query_client {
             >,
             <T as tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             QueryClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -3987,8 +2592,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4013,8 +2617,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4040,8 +2643,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4069,8 +2671,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4098,8 +2699,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4126,8 +2726,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4155,8 +2754,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4184,8 +2782,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4210,8 +2807,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4239,8 +2835,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4271,8 +2866,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4300,8 +2894,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4326,8 +2919,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4354,8 +2946,7 @@ pub mod query_client {
                 .ready()
                 .await
                 .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
+                    tonic::Status::unknown(
                         format!("Service was not ready: {}", e.into()),
                     )
                 })?;
@@ -4370,94 +2961,22 @@ pub mod query_client {
                 );
             self.inner.unary(req, path, codec).await
         }
-        /// UpgradeError returns the error receipt if the upgrade handshake failed.
-        pub async fn upgrade_error(
-            &mut self,
-            request: impl tonic::IntoRequest<super::QueryUpgradeErrorRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryUpgradeErrorResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Query/UpgradeError",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("ibc.core.channel.v1.Query", "UpgradeError"));
-            self.inner.unary(req, path, codec).await
-        }
-        /// Upgrade returns the upgrade for a given port and channel id.
-        pub async fn upgrade(
-            &mut self,
-            request: impl tonic::IntoRequest<super::QueryUpgradeRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryUpgradeResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Query/Upgrade",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("ibc.core.channel.v1.Query", "Upgrade"));
-            self.inner.unary(req, path, codec).await
-        }
-        /// ChannelParams queries all parameters of the ibc channel submodule.
-        pub async fn channel_params(
-            &mut self,
-            request: impl tonic::IntoRequest<super::QueryChannelParamsRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryChannelParamsResponse>,
-            tonic::Status,
-        > {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/ibc.core.channel.v1.Query/ChannelParams",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("ibc.core.channel.v1.Query", "ChannelParams"));
-            self.inner.unary(req, path, codec).await
-        }
     }
 }
 /// Generated server implementations.
 #[cfg(feature = "server")]
 pub mod query_server {
-    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    #![allow(
+        unused_variables,
+        dead_code,
+        missing_docs,
+        clippy::wildcard_imports,
+        clippy::let_unit_value,
+    )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with QueryServer.
     #[async_trait]
-    pub trait Query: Send + Sync + 'static {
+    pub trait Query: std::marker::Send + std::marker::Sync + 'static {
         /// Channel queries an IBC Channel.
         async fn channel(
             &self,
@@ -4578,41 +3097,17 @@ pub mod query_server {
             tonic::Response<super::QueryNextSequenceSendResponse>,
             tonic::Status,
         >;
-        /// UpgradeError returns the error receipt if the upgrade handshake failed.
-        async fn upgrade_error(
-            &self,
-            request: tonic::Request<super::QueryUpgradeErrorRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryUpgradeErrorResponse>,
-            tonic::Status,
-        >;
-        /// Upgrade returns the upgrade for a given port and channel id.
-        async fn upgrade(
-            &self,
-            request: tonic::Request<super::QueryUpgradeRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryUpgradeResponse>,
-            tonic::Status,
-        >;
-        /// ChannelParams queries all parameters of the ibc channel submodule.
-        async fn channel_params(
-            &self,
-            request: tonic::Request<super::QueryChannelParamsRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::QueryChannelParamsResponse>,
-            tonic::Status,
-        >;
     }
     /// Query provides defines the gRPC querier service
     #[derive(Debug)]
-    pub struct QueryServer<T: Query> {
+    pub struct QueryServer<T> {
         inner: Arc<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
         max_decoding_message_size: Option<usize>,
         max_encoding_message_size: Option<usize>,
     }
-    impl<T: Query> QueryServer<T> {
+    impl<T> QueryServer<T> {
         pub fn new(inner: T) -> Self {
             Self::from_arc(Arc::new(inner))
         }
@@ -4666,8 +3161,8 @@ pub mod query_server {
     impl<T, B> tonic::codegen::Service<http::Request<B>> for QueryServer<T>
     where
         T: Query,
-        B: Body + Send + 'static,
-        B::Error: Into<StdError> + Send + 'static,
+        B: Body + std::marker::Send + 'static,
+        B::Error: Into<StdError> + std::marker::Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = std::convert::Infallible;
@@ -5325,160 +3820,27 @@ pub mod query_server {
                     };
                     Box::pin(fut)
                 }
-                "/ibc.core.channel.v1.Query/UpgradeError" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpgradeErrorSvc<T: Query>(pub Arc<T>);
-                    impl<
-                        T: Query,
-                    > tonic::server::UnaryService<super::QueryUpgradeErrorRequest>
-                    for UpgradeErrorSvc<T> {
-                        type Response = super::QueryUpgradeErrorResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::QueryUpgradeErrorRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Query>::upgrade_error(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpgradeErrorSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Query/Upgrade" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpgradeSvc<T: Query>(pub Arc<T>);
-                    impl<
-                        T: Query,
-                    > tonic::server::UnaryService<super::QueryUpgradeRequest>
-                    for UpgradeSvc<T> {
-                        type Response = super::QueryUpgradeResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::QueryUpgradeRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Query>::upgrade(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpgradeSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/ibc.core.channel.v1.Query/ChannelParams" => {
-                    #[allow(non_camel_case_types)]
-                    struct ChannelParamsSvc<T: Query>(pub Arc<T>);
-                    impl<
-                        T: Query,
-                    > tonic::server::UnaryService<super::QueryChannelParamsRequest>
-                    for ChannelParamsSvc<T> {
-                        type Response = super::QueryChannelParamsResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::QueryChannelParamsRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as Query>::channel_params(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = ChannelParamsSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
                 _ => {
                     Box::pin(async move {
-                        Ok(
-                            http::Response::builder()
-                                .status(200)
-                                .header("grpc-status", tonic::Code::Unimplemented as i32)
-                                .header(
-                                    http::header::CONTENT_TYPE,
-                                    tonic::metadata::GRPC_CONTENT_TYPE,
-                                )
-                                .body(empty_body())
-                                .unwrap(),
-                        )
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
                     })
                 }
             }
         }
     }
-    impl<T: Query> Clone for QueryServer<T> {
+    impl<T> Clone for QueryServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self {
@@ -5490,7 +3852,9 @@ pub mod query_server {
             }
         }
     }
-    impl<T: Query> tonic::server::NamedService for QueryServer<T> {
-        const NAME: &'static str = "ibc.core.channel.v1.Query";
+    /// Generated gRPC service name
+    pub const SERVICE_NAME: &str = "ibc.core.channel.v1.Query";
+    impl<T> tonic::server::NamedService for QueryServer<T> {
+        const NAME: &'static str = SERVICE_NAME;
     }
 }

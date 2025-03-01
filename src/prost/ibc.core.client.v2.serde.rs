@@ -1,4 +1,4 @@
-impl serde::Serialize for MsgModuleQuerySafe {
+impl serde::Serialize for CounterpartyInfo {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
@@ -12,31 +12,33 @@ impl serde::Serialize for MsgModuleQuerySafe {
         if true {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.MsgModuleQuerySafe", len)?;
+        let mut struct_ser = serializer.serialize_struct("ibc.core.client.v2.CounterpartyInfo", len)?;
         if true {
-            struct_ser.serialize_field("signer", &self.signer)?;
+            struct_ser.serialize_field("merklePrefix", &self.merkle_prefix.iter().map(pbjson::private::base64::encode).collect::<::alloc::vec::Vec<_>>())?;
         }
         if true {
-            struct_ser.serialize_field("requests", &self.requests)?;
+            struct_ser.serialize_field("clientId", &self.client_id)?;
         }
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for MsgModuleQuerySafe {
+impl<'de> serde::Deserialize<'de> for CounterpartyInfo {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "signer",
-            "requests",
+            "merkle_prefix",
+            "merklePrefix",
+            "client_id",
+            "clientId",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            Signer,
-            Requests,
+            MerklePrefix,
+            ClientId,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
@@ -58,8 +60,8 @@ impl<'de> serde::Deserialize<'de> for MsgModuleQuerySafe {
                         E: serde::de::Error,
                     {
                         match value {
-                            "signer" => Ok(GeneratedField::Signer),
-                            "requests" => Ok(GeneratedField::Requests),
+                            "merklePrefix" | "merkle_prefix" => Ok(GeneratedField::MerklePrefix),
+                            "clientId" | "client_id" => Ok(GeneratedField::ClientId),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -69,158 +71,47 @@ impl<'de> serde::Deserialize<'de> for MsgModuleQuerySafe {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = MsgModuleQuerySafe;
+            type Value = CounterpartyInfo;
 
             fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.MsgModuleQuerySafe")
+                formatter.write_str("struct ibc.core.client.v2.CounterpartyInfo")
             }
 
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<MsgModuleQuerySafe, V::Error>
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<CounterpartyInfo, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut signer__ = None;
-                let mut requests__ = None;
+                let mut merkle_prefix__ = None;
+                let mut client_id__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
-                        GeneratedField::Signer => {
-                            if signer__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("signer"));
+                        GeneratedField::MerklePrefix => {
+                            if merkle_prefix__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("merklePrefix"));
                             }
-                            signer__ = Some(map_.next_value()?);
-                        }
-                        GeneratedField::Requests => {
-                            if requests__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("requests"));
-                            }
-                            requests__ = Some(map_.next_value()?);
-                        }
-                    }
-                }
-                Ok(MsgModuleQuerySafe {
-                    signer: signer__.unwrap_or_default(),
-                    requests: requests__.unwrap_or_default(),
-                })
-            }
-        }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.MsgModuleQuerySafe", FIELDS, GeneratedVisitor)
-    }
-}
-impl serde::Serialize for MsgModuleQuerySafeResponse {
-    #[allow(deprecated)]
-    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let mut len = 0;
-        if true {
-            len += 1;
-        }
-        if true {
-            len += 1;
-        }
-        let mut struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.MsgModuleQuerySafeResponse", len)?;
-        if true {
-            #[allow(clippy::needless_borrow)]
-            struct_ser.serialize_field("height", ::alloc::string::ToString::to_string(&self.height).as_str())?;
-        }
-        if true {
-            struct_ser.serialize_field("responses", &self.responses.iter().map(pbjson::private::base64::encode).collect::<::alloc::vec::Vec<_>>())?;
-        }
-        struct_ser.end()
-    }
-}
-impl<'de> serde::Deserialize<'de> for MsgModuleQuerySafeResponse {
-    #[allow(deprecated)]
-    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &[
-            "height",
-            "responses",
-        ];
-
-        #[allow(clippy::enum_variant_names)]
-        enum GeneratedField {
-            Height,
-            Responses,
-        }
-        impl<'de> serde::Deserialize<'de> for GeneratedField {
-            fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                struct GeneratedVisitor;
-
-                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-                    type Value = GeneratedField;
-
-                    fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                        write!(formatter, "expected one of: {:?}", &FIELDS)
-                    }
-
-                    #[allow(unused_variables)]
-                    fn visit_str<E>(self, value: &str) -> core::result::Result<GeneratedField, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        match value {
-                            "height" => Ok(GeneratedField::Height),
-                            "responses" => Ok(GeneratedField::Responses),
-                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
-                        }
-                    }
-                }
-                deserializer.deserialize_identifier(GeneratedVisitor)
-            }
-        }
-        struct GeneratedVisitor;
-        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = MsgModuleQuerySafeResponse;
-
-            fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.MsgModuleQuerySafeResponse")
-            }
-
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<MsgModuleQuerySafeResponse, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
-            {
-                let mut height__ = None;
-                let mut responses__ = None;
-                while let Some(k) = map_.next_key()? {
-                    match k {
-                        GeneratedField::Height => {
-                            if height__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("height"));
-                            }
-                            height__ = 
-                                Some(map_.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
-                            ;
-                        }
-                        GeneratedField::Responses => {
-                            if responses__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("responses"));
-                            }
-                            responses__ = 
+                            merkle_prefix__ = 
                                 Some(map_.next_value::<::alloc::vec::Vec<::pbjson::private::BytesDeserialize<_>>>()?
                                     .into_iter().map(|x| x.0).collect())
                             ;
                         }
+                        GeneratedField::ClientId => {
+                            if client_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("clientId"));
+                            }
+                            client_id__ = Some(map_.next_value()?);
+                        }
                     }
                 }
-                Ok(MsgModuleQuerySafeResponse {
-                    height: height__.unwrap_or_default(),
-                    responses: responses__.unwrap_or_default(),
+                Ok(CounterpartyInfo {
+                    merkle_prefix: merkle_prefix__.unwrap_or_default(),
+                    client_id: client_id__.unwrap_or_default(),
                 })
             }
         }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.MsgModuleQuerySafeResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("ibc.core.client.v2.CounterpartyInfo", FIELDS, GeneratedVisitor)
     }
 }
-impl serde::Serialize for MsgUpdateParams {
+impl serde::Serialize for GenesisCounterpartyInfo {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
@@ -234,31 +125,33 @@ impl serde::Serialize for MsgUpdateParams {
         if true {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.MsgUpdateParams", len)?;
+        let mut struct_ser = serializer.serialize_struct("ibc.core.client.v2.GenesisCounterpartyInfo", len)?;
         if true {
-            struct_ser.serialize_field("signer", &self.signer)?;
+            struct_ser.serialize_field("clientId", &self.client_id)?;
         }
-        if let Some(v) = self.params.as_ref() {
-            struct_ser.serialize_field("params", v)?;
+        if let Some(v) = self.counterparty_info.as_ref() {
+            struct_ser.serialize_field("counterpartyInfo", v)?;
         }
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for MsgUpdateParams {
+impl<'de> serde::Deserialize<'de> for GenesisCounterpartyInfo {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "signer",
-            "params",
+            "client_id",
+            "clientId",
+            "counterparty_info",
+            "counterpartyInfo",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            Signer,
-            Params,
+            ClientId,
+            CounterpartyInfo,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
@@ -280,8 +173,8 @@ impl<'de> serde::Deserialize<'de> for MsgUpdateParams {
                         E: serde::de::Error,
                     {
                         match value {
-                            "signer" => Ok(GeneratedField::Signer),
-                            "params" => Ok(GeneratedField::Params),
+                            "clientId" | "client_id" => Ok(GeneratedField::ClientId),
+                            "counterpartyInfo" | "counterparty_info" => Ok(GeneratedField::CounterpartyInfo),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -291,44 +184,284 @@ impl<'de> serde::Deserialize<'de> for MsgUpdateParams {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = MsgUpdateParams;
+            type Value = GenesisCounterpartyInfo;
 
             fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.MsgUpdateParams")
+                formatter.write_str("struct ibc.core.client.v2.GenesisCounterpartyInfo")
             }
 
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<MsgUpdateParams, V::Error>
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<GenesisCounterpartyInfo, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut signer__ = None;
-                let mut params__ = None;
+                let mut client_id__ = None;
+                let mut counterparty_info__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
+                        GeneratedField::ClientId => {
+                            if client_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("clientId"));
+                            }
+                            client_id__ = Some(map_.next_value()?);
+                        }
+                        GeneratedField::CounterpartyInfo => {
+                            if counterparty_info__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("counterpartyInfo"));
+                            }
+                            counterparty_info__ = map_.next_value()?;
+                        }
+                    }
+                }
+                Ok(GenesisCounterpartyInfo {
+                    client_id: client_id__.unwrap_or_default(),
+                    counterparty_info: counterparty_info__,
+                })
+            }
+        }
+        deserializer.deserialize_struct("ibc.core.client.v2.GenesisCounterpartyInfo", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for GenesisState {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if true {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("ibc.core.client.v2.GenesisState", len)?;
+        if true {
+            struct_ser.serialize_field("counterpartyInfos", &self.counterparty_infos)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for GenesisState {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "counterparty_infos",
+            "counterpartyInfos",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            CounterpartyInfos,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> core::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "counterpartyInfos" | "counterparty_infos" => Ok(GeneratedField::CounterpartyInfos),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = GenesisState;
+
+            fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                formatter.write_str("struct ibc.core.client.v2.GenesisState")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<GenesisState, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut counterparty_infos__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::CounterpartyInfos => {
+                            if counterparty_infos__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("counterpartyInfos"));
+                            }
+                            counterparty_infos__ = Some(map_.next_value()?);
+                        }
+                    }
+                }
+                Ok(GenesisState {
+                    counterparty_infos: counterparty_infos__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("ibc.core.client.v2.GenesisState", FIELDS, GeneratedVisitor)
+    }
+}
+impl serde::Serialize for MsgRegisterCounterparty {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 0;
+        if true {
+            len += 1;
+        }
+        if true {
+            len += 1;
+        }
+        if true {
+            len += 1;
+        }
+        if true {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("ibc.core.client.v2.MsgRegisterCounterparty", len)?;
+        if true {
+            struct_ser.serialize_field("clientId", &self.client_id)?;
+        }
+        if true {
+            struct_ser.serialize_field("counterpartyMerklePrefix", &self.counterparty_merkle_prefix.iter().map(pbjson::private::base64::encode).collect::<::alloc::vec::Vec<_>>())?;
+        }
+        if true {
+            struct_ser.serialize_field("counterpartyClientId", &self.counterparty_client_id)?;
+        }
+        if true {
+            struct_ser.serialize_field("signer", &self.signer)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for MsgRegisterCounterparty {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "client_id",
+            "clientId",
+            "counterparty_merkle_prefix",
+            "counterpartyMerklePrefix",
+            "counterparty_client_id",
+            "counterpartyClientId",
+            "signer",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            ClientId,
+            CounterpartyMerklePrefix,
+            CounterpartyClientId,
+            Signer,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> core::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "clientId" | "client_id" => Ok(GeneratedField::ClientId),
+                            "counterpartyMerklePrefix" | "counterparty_merkle_prefix" => Ok(GeneratedField::CounterpartyMerklePrefix),
+                            "counterpartyClientId" | "counterparty_client_id" => Ok(GeneratedField::CounterpartyClientId),
+                            "signer" => Ok(GeneratedField::Signer),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = MsgRegisterCounterparty;
+
+            fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                formatter.write_str("struct ibc.core.client.v2.MsgRegisterCounterparty")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<MsgRegisterCounterparty, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut client_id__ = None;
+                let mut counterparty_merkle_prefix__ = None;
+                let mut counterparty_client_id__ = None;
+                let mut signer__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::ClientId => {
+                            if client_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("clientId"));
+                            }
+                            client_id__ = Some(map_.next_value()?);
+                        }
+                        GeneratedField::CounterpartyMerklePrefix => {
+                            if counterparty_merkle_prefix__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("counterpartyMerklePrefix"));
+                            }
+                            counterparty_merkle_prefix__ = 
+                                Some(map_.next_value::<::alloc::vec::Vec<::pbjson::private::BytesDeserialize<_>>>()?
+                                    .into_iter().map(|x| x.0).collect())
+                            ;
+                        }
+                        GeneratedField::CounterpartyClientId => {
+                            if counterparty_client_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("counterpartyClientId"));
+                            }
+                            counterparty_client_id__ = Some(map_.next_value()?);
+                        }
                         GeneratedField::Signer => {
                             if signer__.is_some() {
                                 return Err(serde::de::Error::duplicate_field("signer"));
                             }
                             signer__ = Some(map_.next_value()?);
                         }
-                        GeneratedField::Params => {
-                            if params__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("params"));
-                            }
-                            params__ = map_.next_value()?;
-                        }
                     }
                 }
-                Ok(MsgUpdateParams {
+                Ok(MsgRegisterCounterparty {
+                    client_id: client_id__.unwrap_or_default(),
+                    counterparty_merkle_prefix: counterparty_merkle_prefix__.unwrap_or_default(),
+                    counterparty_client_id: counterparty_client_id__.unwrap_or_default(),
                     signer: signer__.unwrap_or_default(),
-                    params: params__,
                 })
             }
         }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.MsgUpdateParams", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("ibc.core.client.v2.MsgRegisterCounterparty", FIELDS, GeneratedVisitor)
     }
 }
-impl serde::Serialize for MsgUpdateParamsResponse {
+impl serde::Serialize for MsgRegisterCounterpartyResponse {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
@@ -336,11 +469,11 @@ impl serde::Serialize for MsgUpdateParamsResponse {
     {
         use serde::ser::SerializeStruct;
         let len = 0;
-        let struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.MsgUpdateParamsResponse", len)?;
+        let struct_ser = serializer.serialize_struct("ibc.core.client.v2.MsgRegisterCounterpartyResponse", len)?;
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for MsgUpdateParamsResponse {
+impl<'de> serde::Deserialize<'de> for MsgRegisterCounterpartyResponse {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
@@ -379,27 +512,27 @@ impl<'de> serde::Deserialize<'de> for MsgUpdateParamsResponse {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = MsgUpdateParamsResponse;
+            type Value = MsgRegisterCounterpartyResponse;
 
             fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.MsgUpdateParamsResponse")
+                formatter.write_str("struct ibc.core.client.v2.MsgRegisterCounterpartyResponse")
             }
 
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<MsgUpdateParamsResponse, V::Error>
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<MsgRegisterCounterpartyResponse, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
                 while map_.next_key::<GeneratedField>()?.is_some() {
                     let _ = map_.next_value::<serde::de::IgnoredAny>()?;
                 }
-                Ok(MsgUpdateParamsResponse {
+                Ok(MsgRegisterCounterpartyResponse {
                 })
             }
         }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.MsgUpdateParamsResponse", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("ibc.core.client.v2.MsgRegisterCounterpartyResponse", FIELDS, GeneratedVisitor)
     }
 }
-impl serde::Serialize for Params {
+impl serde::Serialize for QueryCounterpartyInfoRequest {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
@@ -410,36 +543,27 @@ impl serde::Serialize for Params {
         if true {
             len += 1;
         }
+        let mut struct_ser = serializer.serialize_struct("ibc.core.client.v2.QueryCounterpartyInfoRequest", len)?;
         if true {
-            len += 1;
-        }
-        let mut struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.Params", len)?;
-        if true {
-            struct_ser.serialize_field("hostEnabled", &self.host_enabled)?;
-        }
-        if true {
-            struct_ser.serialize_field("allowMessages", &self.allow_messages)?;
+            struct_ser.serialize_field("clientId", &self.client_id)?;
         }
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for Params {
+impl<'de> serde::Deserialize<'de> for QueryCounterpartyInfoRequest {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "host_enabled",
-            "hostEnabled",
-            "allow_messages",
-            "allowMessages",
+            "client_id",
+            "clientId",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            HostEnabled,
-            AllowMessages,
+            ClientId,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
@@ -461,8 +585,7 @@ impl<'de> serde::Deserialize<'de> for Params {
                         E: serde::de::Error,
                     {
                         match value {
-                            "hostEnabled" | "host_enabled" => Ok(GeneratedField::HostEnabled),
-                            "allowMessages" | "allow_messages" => Ok(GeneratedField::AllowMessages),
+                            "clientId" | "client_id" => Ok(GeneratedField::ClientId),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -472,115 +595,36 @@ impl<'de> serde::Deserialize<'de> for Params {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = Params;
+            type Value = QueryCounterpartyInfoRequest;
 
             fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.Params")
+                formatter.write_str("struct ibc.core.client.v2.QueryCounterpartyInfoRequest")
             }
 
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<Params, V::Error>
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<QueryCounterpartyInfoRequest, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut host_enabled__ = None;
-                let mut allow_messages__ = None;
+                let mut client_id__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
-                        GeneratedField::HostEnabled => {
-                            if host_enabled__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("hostEnabled"));
+                        GeneratedField::ClientId => {
+                            if client_id__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("clientId"));
                             }
-                            host_enabled__ = Some(map_.next_value()?);
-                        }
-                        GeneratedField::AllowMessages => {
-                            if allow_messages__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("allowMessages"));
-                            }
-                            allow_messages__ = Some(map_.next_value()?);
+                            client_id__ = Some(map_.next_value()?);
                         }
                     }
                 }
-                Ok(Params {
-                    host_enabled: host_enabled__.unwrap_or_default(),
-                    allow_messages: allow_messages__.unwrap_or_default(),
+                Ok(QueryCounterpartyInfoRequest {
+                    client_id: client_id__.unwrap_or_default(),
                 })
             }
         }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.Params", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("ibc.core.client.v2.QueryCounterpartyInfoRequest", FIELDS, GeneratedVisitor)
     }
 }
-impl serde::Serialize for QueryParamsRequest {
-    #[allow(deprecated)]
-    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let len = 0;
-        let struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.QueryParamsRequest", len)?;
-        struct_ser.end()
-    }
-}
-impl<'de> serde::Deserialize<'de> for QueryParamsRequest {
-    #[allow(deprecated)]
-    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &[
-        ];
-
-        #[allow(clippy::enum_variant_names)]
-        enum GeneratedField {
-        }
-        impl<'de> serde::Deserialize<'de> for GeneratedField {
-            fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                struct GeneratedVisitor;
-
-                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-                    type Value = GeneratedField;
-
-                    fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                        write!(formatter, "expected one of: {:?}", &FIELDS)
-                    }
-
-                    #[allow(unused_variables)]
-                    fn visit_str<E>(self, value: &str) -> core::result::Result<GeneratedField, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                            Err(serde::de::Error::unknown_field(value, FIELDS))
-                    }
-                }
-                deserializer.deserialize_identifier(GeneratedVisitor)
-            }
-        }
-        struct GeneratedVisitor;
-        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = QueryParamsRequest;
-
-            fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.QueryParamsRequest")
-            }
-
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<QueryParamsRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
-            {
-                while map_.next_key::<GeneratedField>()?.is_some() {
-                    let _ = map_.next_value::<serde::de::IgnoredAny>()?;
-                }
-                Ok(QueryParamsRequest {
-                })
-            }
-        }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.QueryParamsRequest", FIELDS, GeneratedVisitor)
-    }
-}
-impl serde::Serialize for QueryParamsResponse {
+impl serde::Serialize for QueryCounterpartyInfoResponse {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
     where
@@ -591,26 +635,27 @@ impl serde::Serialize for QueryParamsResponse {
         if true {
             len += 1;
         }
-        let mut struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.QueryParamsResponse", len)?;
-        if let Some(v) = self.params.as_ref() {
-            struct_ser.serialize_field("params", v)?;
+        let mut struct_ser = serializer.serialize_struct("ibc.core.client.v2.QueryCounterpartyInfoResponse", len)?;
+        if let Some(v) = self.counterparty_info.as_ref() {
+            struct_ser.serialize_field("counterpartyInfo", v)?;
         }
         struct_ser.end()
     }
 }
-impl<'de> serde::Deserialize<'de> for QueryParamsResponse {
+impl<'de> serde::Deserialize<'de> for QueryCounterpartyInfoResponse {
     #[allow(deprecated)]
     fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         const FIELDS: &[&str] = &[
-            "params",
+            "counterparty_info",
+            "counterpartyInfo",
         ];
 
         #[allow(clippy::enum_variant_names)]
         enum GeneratedField {
-            Params,
+            CounterpartyInfo,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
@@ -632,7 +677,7 @@ impl<'de> serde::Deserialize<'de> for QueryParamsResponse {
                         E: serde::de::Error,
                     {
                         match value {
-                            "params" => Ok(GeneratedField::Params),
+                            "counterpartyInfo" | "counterparty_info" => Ok(GeneratedField::CounterpartyInfo),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -642,143 +687,32 @@ impl<'de> serde::Deserialize<'de> for QueryParamsResponse {
         }
         struct GeneratedVisitor;
         impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = QueryParamsResponse;
+            type Value = QueryCounterpartyInfoResponse;
 
             fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.QueryParamsResponse")
+                formatter.write_str("struct ibc.core.client.v2.QueryCounterpartyInfoResponse")
             }
 
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<QueryParamsResponse, V::Error>
+            fn visit_map<V>(self, mut map_: V) -> core::result::Result<QueryCounterpartyInfoResponse, V::Error>
                 where
                     V: serde::de::MapAccess<'de>,
             {
-                let mut params__ = None;
+                let mut counterparty_info__ = None;
                 while let Some(k) = map_.next_key()? {
                     match k {
-                        GeneratedField::Params => {
-                            if params__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("params"));
+                        GeneratedField::CounterpartyInfo => {
+                            if counterparty_info__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("counterpartyInfo"));
                             }
-                            params__ = map_.next_value()?;
+                            counterparty_info__ = map_.next_value()?;
                         }
                     }
                 }
-                Ok(QueryParamsResponse {
-                    params: params__,
+                Ok(QueryCounterpartyInfoResponse {
+                    counterparty_info: counterparty_info__,
                 })
             }
         }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.QueryParamsResponse", FIELDS, GeneratedVisitor)
-    }
-}
-impl serde::Serialize for QueryRequest {
-    #[allow(deprecated)]
-    fn serialize<S>(&self, serializer: S) -> core::result::Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        let mut len = 0;
-        if true {
-            len += 1;
-        }
-        if true {
-            len += 1;
-        }
-        let mut struct_ser = serializer.serialize_struct("ibc.applications.interchain_accounts.host.v1.QueryRequest", len)?;
-        if true {
-            struct_ser.serialize_field("path", &self.path)?;
-        }
-        if true {
-            #[allow(clippy::needless_borrow)]
-            struct_ser.serialize_field("data", pbjson::private::base64::encode(&self.data).as_str())?;
-        }
-        struct_ser.end()
-    }
-}
-impl<'de> serde::Deserialize<'de> for QueryRequest {
-    #[allow(deprecated)]
-    fn deserialize<D>(deserializer: D) -> core::result::Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        const FIELDS: &[&str] = &[
-            "path",
-            "data",
-        ];
-
-        #[allow(clippy::enum_variant_names)]
-        enum GeneratedField {
-            Path,
-            Data,
-        }
-        impl<'de> serde::Deserialize<'de> for GeneratedField {
-            fn deserialize<D>(deserializer: D) -> core::result::Result<GeneratedField, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                struct GeneratedVisitor;
-
-                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-                    type Value = GeneratedField;
-
-                    fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                        write!(formatter, "expected one of: {:?}", &FIELDS)
-                    }
-
-                    #[allow(unused_variables)]
-                    fn visit_str<E>(self, value: &str) -> core::result::Result<GeneratedField, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        match value {
-                            "path" => Ok(GeneratedField::Path),
-                            "data" => Ok(GeneratedField::Data),
-                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
-                        }
-                    }
-                }
-                deserializer.deserialize_identifier(GeneratedVisitor)
-            }
-        }
-        struct GeneratedVisitor;
-        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
-            type Value = QueryRequest;
-
-            fn expecting(&self, formatter: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                formatter.write_str("struct ibc.applications.interchain_accounts.host.v1.QueryRequest")
-            }
-
-            fn visit_map<V>(self, mut map_: V) -> core::result::Result<QueryRequest, V::Error>
-                where
-                    V: serde::de::MapAccess<'de>,
-            {
-                let mut path__ = None;
-                let mut data__ = None;
-                while let Some(k) = map_.next_key()? {
-                    match k {
-                        GeneratedField::Path => {
-                            if path__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("path"));
-                            }
-                            path__ = Some(map_.next_value()?);
-                        }
-                        GeneratedField::Data => {
-                            if data__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("data"));
-                            }
-                            data__ = 
-                                Some(map_.next_value::<::pbjson::private::BytesDeserialize<_>>()?.0)
-                            ;
-                        }
-                    }
-                }
-                Ok(QueryRequest {
-                    path: path__.unwrap_or_default(),
-                    data: data__.unwrap_or_default(),
-                })
-            }
-        }
-        deserializer.deserialize_struct("ibc.applications.interchain_accounts.host.v1.QueryRequest", FIELDS, GeneratedVisitor)
+        deserializer.deserialize_struct("ibc.core.client.v2.QueryCounterpartyInfoResponse", FIELDS, GeneratedVisitor)
     }
 }
