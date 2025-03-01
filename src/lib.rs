@@ -134,13 +134,6 @@ pub mod ibc {
                 include_proto!("ibc.core.connection.v1.serde.rs");
             }
         }
-        pub mod types {
-            pub mod v1 {
-                include_proto!("ibc.core.types.v1.rs");
-                #[cfg(feature = "serde")]
-                include_proto!("ibc.core.types.v1.serde.rs");
-            }
-        }
     }
     pub mod lightclients {
         pub mod localhost {
